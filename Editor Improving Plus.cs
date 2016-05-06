@@ -17,9 +17,8 @@ namespace Editor_Function_Plus_Mod
         public override string DisplayName { get { return "Editor Function Plus Mod"; } }
         public override string BesiegeVersion { get { return "v0.23"; } }
         public override string Author { get { return "覅是"; } }
-        public override Version Version { get { return new Version("0.02"); } }
+        public override Version Version { get { return new Version("0.03"); } }
         public override bool CanBeUnloaded { get { return true; } }
-
         public GameObject temp;
         public override void OnLoad()
         {
@@ -38,7 +37,9 @@ namespace Editor_Function_Plus_Mod
 
     public class Editor_Function_Plus_Mod_Script : MonoBehaviour
     {
+        private int countFrame = 0;
         private bool ResizeMode = true;
+        private bool gotten = false;
         private int currentFrameCount = 0;
         void Start()
         {
@@ -70,7 +71,6 @@ namespace Editor_Function_Plus_Mod
         
         void Update()
         {
-            currentFrameCount += 1;
             try
             {
                 try
@@ -90,6 +90,31 @@ namespace Editor_Function_Plus_Mod
                 
             }
             catch { }
+            if (AddPiece.isSimulating)
+            {
+                if (!gotten)
+                {
+                    float totalMass = 0;
+                    //gotten = true;
+                    foreach (GameObject block in FindObjectsOfType<GameObject>())
+                    {
+                        if (block.transform.root.name.Contains("CurrentMachine"))
+                        {
+                            try
+                            {
+                                if (!block.GetComponent<Rigidbody>().isKinematic)
+                                {
+                                    totalMass += block.GetComponent<Rigidbody>().mass;
+                                }
+                            }
+                            catch { }
+                        }
+                    }
+                    Debug.Log("Machine Total Mass is " + totalMass);
+                    countFrame = currentFrameCount;
+                }
+            }
+            else { countFrame = 0; currentFrameCount += 1; gotten = false; }
         }
     }
 }
